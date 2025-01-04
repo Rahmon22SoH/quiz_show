@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+
+
+{% block title %}Flasky{% endblock %}
+
+
+
+
+{% block page_content %}
+<div class="page-header">
+    <form method="post">
+        {{ form.hidden_tag() }} <!-- Это скрытые поля, например для CSRF защиты -->
+        <h1>Helo, {% if name %}{{ name }} {% else %} Strenger {% endif %}! </h1>
+        {{ wtf.quick_form(form) }} <!-- Быстрая отрисовка формы с использованием flask_wtf -->
+    </form>
+</div>
+<p>The local date and time is {{ moment(current_time).format('LLL') }}.</p>
+<p>That was {{ moment(current_time).fromNow(refresh=True) }}</p>
+{% endblock %}
