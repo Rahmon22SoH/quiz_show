@@ -1,0 +1,31 @@
+# Исключение виртуального окружения
+env/
+venv/
+
+# Логи
+*.log
+*.out
+*.err
+
+
+# Конфигурационные файлы
+.env
+instance/
+
+# Системные файлы
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.sqlite3
+
+# Миграции Alembic
+migrations/versions/*.pyc
+
+# IDE/редакторы кода
+.vscode/
+.idea/
+
+# Операционная система
+.DS_Store
+Thumbs.db
