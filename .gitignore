@@ -11,16 +11,19 @@ venv/
 # Конфигурационные файлы
 .env
 instance/
+.flaskenv
 
 # Системные файлы
 *.pyc
 __pycache__/
 *.pyo
 *.pyd
+*.sqlite
 *.sqlite3
 
 # Миграции Alembic
 migrations/versions/*.pyc
+migrations/versions/*.py
 
 # IDE/редакторы кода
 .vscode/
@@ -29,3 +32,8 @@ migrations/versions/*.pyc
 # Операционная система
 .DS_Store
 Thumbs.db
+
+# Другие временные файлы
+*.swp
+*.swo
+*.bak
