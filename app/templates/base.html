@@ -18,13 +18,37 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Flasky</a>
+            <a class="navbar-brand" href="/">Quiz Jackpot </a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/">Home</a></li>
             </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="navbar-text">
+                    <span id="current-time"></span>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if current_user.is_authenticated %}
+                    <!-- Приветствие для авторизованного пользователя -->
+                    <li><a href="#">Привет, {{ current_user.username }}!</a></li>
+                    {% if current_user.role and current_user.role.name == 'admin' %}
+                    <li><a href="{{ url_for('admin.dashboard') }}">Admin Panel</a></li>
+                    {% endif %}
+                {% else %}
+                <!-- Текст для незарегистрированных пользователей без ссылки -->
+                <li><a href="#">Предлагаю пройти регистрацию!</a></li>
+                {% endif %}
+                {% if not current_user.is_authenticated %}
+                <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
+                <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+                {% else %}
+                <li><a href="{{ url_for('auth.logout') }}">Log Out ({{ current_user.username }})</a></li>
+                {% endif %}
+            </ul>
         </div>
+
     </div>
 </div>
 
@@ -38,7 +62,7 @@
         {{ message }}
     </div>
     {% endfor %}
-    
+
     {% block page_content %}{% endblock %}
 </div>
 {% endblock %}
@@ -46,4 +70,15 @@
 {% block scripts %}
 {{ super() }}
 {{ moment.include_moment() }}
+<script>
+    // Функция обновления времени
+    function updateTime() {
+        var currentTime = moment().format('LLL');  // Текущее время в формате "День, Месяц, Год, Время"
+        document.getElementById('current-time').textContent = currentTime;
+    }
+
+    // Обновляем время при загрузке страницы и далее каждую минуту
+    updateTime();
+    setInterval(updateTime, 60000);
+</script>
 {% endblock %}

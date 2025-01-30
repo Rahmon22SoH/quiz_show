@@ -11,6 +11,8 @@ class Config:
 	MAIL_USE_TLS= True
 	MAIL_USERNAME = os.getenv('MAIL_USERNAME')
 	MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+	ADMIN_EMAIL = os.getenv('ADMIN_EMAIL')
+	ADMIN_PASSWORD = os.getenv('PASSWORD_ADMIN')
 	FLASKY_MAIL_SUBJECT_PREFIX  = '[Flasky]'
 	FLASKY_MAIL_SENDER  = 'Flasky Admin <mebelnazakazms@gmail.com>'
 	FLASKY_ADMIN  = os.getenv('FLASKY_ADMIN')

@@ -1,0 +1,16 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+<h1>Админ-панель</h1>
+<ul class="list-group">
+    <li class="list-group-item">
+        <a href="{{ url_for('admin.view_users') }}">Пользователи</a>
+    </li>
+    <li class="list-group-item">
+        <a href="{{ url_for('admin.view_logs') }}">Журнал действий</a>
+    </li>
+    <li class="list-group-item">
+        <a href="{{ url_for('admin.view_quizzes') }}">Квизы</a>
+    </li>
+</ul>
+{% endblock %}

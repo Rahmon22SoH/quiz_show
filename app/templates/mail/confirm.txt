@@ -1,0 +1,5 @@
+Hi, {{ user.username }}!
+To confirm your account, please click on the following link:
+url_for('auth.confirm_email', token=token, _external=True)
+Confirm Your Account
+If you did not create an account, please ignore this email.
