@@ -1,12 +1,82 @@
 {% extends "base.html" %}
+{% import "macros/flash_messages.html" as flash_messages %}
 
-
-
-{% block title %}Flasky{% endblock %}
-
-
-
+{% block title %}Quiz Show - Главная{% endblock %}
 
 {% block page_content %}
+<div class="container py-4">
+	<div class="row justify-content-center">
+		<div class="col-md-8">
+			<!-- Блок приветствия -->
+			<div class="card shadow mb-4">
+				<div class="card-header bg-primary text-white">
+					<h3 class="mb-0">Добро пожаловать в Quiz Show!</h3>
+				</div>
+				<div class="card-body">
+					<p class="lead">Участвуйте в квизах и выигрывайте призы!</p>
 
+					<div class="mt-4">
+						<p>Quiz Show - это платформа для проведения интерактивных квизов с денежными призами.
+							Присоединяйтесь к нам и испытайте свою удачу!</p>
+
+						<div class="mt-3">
+							<a href="{{ url_for('quiz.index') }}" class="btn btn-primary">
+								<i class="fas fa-play-circle me-2"></i>Перейти к квизам
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Блок "Как это работает" -->
+			<div class="card shadow mb-4">
+				<div class="card-header bg-secondary text-white">
+					<h5 class="mb-0">Как это работает</h5>
+				</div>
+				<div class="card-body">
+					<ol>
+						<li>Зарегистрируйтесь или войдите через Telegram</li>
+						<li>Пополните баланс</li>
+						<li>Участвуйте в активных квизах</li>
+						<li>Выигрывайте призы!</li>
+					</ol>
+				</div>
+			</div>
+
+			<!-- Блок "Преимущества" -->
+			<div class="card shadow mb-4">
+				<div class="card-header bg-info text-white">
+					<h5 class="mb-0">Преимущества</h5>
+				</div>
+				<div class="card-body">
+					<ul class="list-unstyled">
+						<li><i class="fas fa-check-circle text-success me-2"></i>Простая регистрация через Telegram</li>
+						<li><i class="fas fa-check-circle text-success me-2"></i>Быстрые выплаты</li>
+						<li><i class="fas fa-check-circle text-success me-2"></i>Прозрачная система выбора победителей
+						</li>
+						<li><i class="fas fa-check-circle text-success me-2"></i>Регулярные квизы</li>
+					</ul>
+				</div>
+			</div>
+
+			<!-- Блок "Правила участия" -->
+			<div class="card shadow mb-4">
+				<div class="card-header bg-info text-white">
+					<h5 class="mb-0">Правила участия</h5>
+				</div>
+				<div class="card-body">
+					<ul class="list-unstyled">
+						<li><i class="fas fa-check-circle text-success me-2"></i>Минимальная сумма пополнения: 100₽</li>
+						<li><i class="fas fa-check-circle text-success me-2"></i>Комиссия платформы: 15% от выигрыша
+						</li>
+						<li><i class="fas fa-check-circle text-success me-2"></i>Возврат ставки при отсутствии других
+							участников</li>
+						<li><i class="fas fa-check-circle text-success me-2"></i>Победитель определяется случайным
+							образом</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 {% endblock %}

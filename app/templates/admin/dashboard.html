@@ -1,16 +1,149 @@
-{% extends "admin_base.html" %}
+{% extends "admin/base.html" %}
 
-{% block content %}
-<h1>Админ-панель</h1>
-<ul class="list-group">
-    <li class="list-group-item">
-        <a href="{{ url_for('admin.view_users') }}">Пользователи</a>
-    </li>
-    <li class="list-group-item">
-        <a href="{{ url_for('admin.view_logs') }}">Журнал действий</a>
-    </li>
-    <li class="list-group-item">
-        <a href="{{ url_for('admin.view_quizzes') }}">Квизы</a>
-    </li>
-</ul>
+{% block admin_content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-4">Панель управления</h1>
+        </div>
+    </div>
+
+    <!-- Основные метрики -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Активные квизы</h5>
+                    <h2 class="text-primary">{{ active_quizzes_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Всего пользователей</h5>
+                    <h2 class="text-primary">{{ users_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Завершенные квизы</h5>
+                    <h2 class="text-primary">{{ finished_quizzes_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Средняя сумма квиза</h5>
+                    <h2 class="text-primary">{{ avg_quiz_amount|default(0) }}₽</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Финансовые метрики -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="mb-3">Финансовые показатели</h4>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Общая прибыль</h5>
+                    <h2 class="text-success">{{ platform_stats.total_revenue }}₽</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Прибыль за текущий месяц</h5>
+                    <h2 class="text-success">{{ platform_stats.revenue_current_month }}₽</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Прибыль за прошлый месяц</h5>
+                    <h2 class="text-success">{{ platform_stats.revenue_previous_month }}₽</h2>
+                    {% if platform_stats.revenue_previous_month > 0 and platform_stats.revenue_current_month > 0 %}
+                    {% set growth = ((platform_stats.revenue_current_month - platform_stats.revenue_previous_month) /
+                    platform_stats.revenue_previous_month * 100)|round|int %}
+                    {% if growth > 0 %}
+                    <span class="badge bg-success">+{{ growth }}%</span>
+                    {% elif growth < 0 %} <span class="badge bg-danger">{{ growth }}%</span>
+                        {% else %}
+                        <span class="badge bg-secondary">0%</span>
+                        {% endif %}
+                        {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Дополнительная статистика -->
+    <div class="row">
+        <div class="col-12">
+            <h4 class="mb-3">Дополнительная статистика</h4>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Статистика квизов</h5>
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <td>Всего проведено квизов</td>
+                                <td class="text-end">{{ finished_quizzes_count }}</td>
+                            </tr>
+                            <tr>
+                                <td>Квизы без участников</td>
+                                <td class="text-end">{{ empty_quizzes_count|default(0) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Квизы с одним участником</td>
+                                <td class="text-end">{{ single_participant_quizzes_count|default(0) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Среднее количество участников</td>
+                                <td class="text-end">{{ avg_participants_count|default(0) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Статистика пользователей</h5>
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <td>Всего пользователей</td>
+                                <td class="text-end">{{ users_count }}</td>
+                            </tr>
+                            <tr>
+                                <td>Активные пользователи</td>
+                                <td class="text-end">{{ active_users_count|default(0) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Конверсия (% участвующих в квизах)</td>
+                                <td class="text-end">{{ (conversion_rate|default(0) * 100)|round|int }}%</td>
+                            </tr>
+                            <tr>
+                                <td>Общий баланс пользователей</td>
+                                <td class="text-end">{{ total_user_balance|default(0) }}₽</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

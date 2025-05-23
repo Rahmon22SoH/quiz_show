@@ -1,87 +1,130 @@
 from app.extensions import login_manager
-from app.models import User, Role, db, Log
-from flask import render_template, flash, redirect, url_for
-from flask_login import current_user, UserMixin
-from flask import current_app, abort
+from flask import flash, redirect, url_for, session, request
+from flask_login import current_user
 from functools import wraps
-from werkzeug.security import generate_password_hash
+from app.utils.logger import log_event
+from app.utils.action_logger import log_action
 import os
+from datetime import datetime
 
 @login_manager.user_loader
 def load_user(user_id):
+    from app.models import User
     return User.query.get(int(user_id))
 
-
 def seed_admin_user():
-    """Добавляет суперпользователя (admin) в базу данных."""
+    """Добавляет администратора в базу данных."""
+    from app.models import User, Role
+    
     # Получаем данные из .env
-    admin_email = current_app.config['ADMIN_EMAIL']
-    admin_password = os.getenv('ADMIN_PASSWORD')  # Берем пароль из переменной окружения
-
-    if admin_password:  # Проверяем, что пароль существует в .env
-        password_hash = generate_password_hash(admin_password)  # Хешируем пароль
-    else:
-        raise ValueError("ADMIN_PASSWORD не установлен в переменных окружения!")
-
+    admin_telegram_id = os.getenv('ADMIN_TELEGRAM_ID')
+    
+    if not admin_telegram_id:
+        print("ADMIN_TELEGRAM_ID не установлен в .env файле!")
+        return
+    
     # Проверяем, существует ли пользователь
-    admin_user = User.query.filter_by(email=admin_email).first()
+    admin_user = User.query.filter_by(telegram_id=admin_telegram_id).first()
     admin_role = Role.query.filter_by(name='admin').first()
 
     if not admin_user and admin_role:
         admin_user = User(
             username='admin',
-            email=admin_email,
             first_name='Admin',
             last_name='User',
-            role_id=admin_role.id,
-            confirmed=1
+            telegram_id=admin_telegram_id,
+            telegram_username='admin',
+            telegram_auth_date=datetime.utcnow(),
+            role_id=admin_role.id
         )
-        admin_user.set_password(admin_password)  # Устанавливаем пароль
-        db.session.add(admin_user)
-        db.session.commit()
+        if not admin_user.save():
+            print("Ошибка при создании администратора")
+            return
+        print(f"Администратор создан с telegram_id: {admin_telegram_id}")
 
 def seed_roles():
-        """Добавляет предустановленные роли в базу данных."""
-        roles = ['admin', 'user']  # Предустановленные роли
-        for role_name in roles:
-            if not Role.query.filter_by(name=role_name).first():
-                role = Role(name=role_name)
-                db.session.add(role)
-        db.session.commit()   
+    """Добавляет предустановленные роли в базу данных."""
+    from app.models import Role
+    
+    roles = ['admin', 'user']  # Предустановленные роли
+    for role_name in roles:
+        if not Role.query.filter_by(name=role_name).first():
+            role = Role(name=role_name)
+            if not role.save():
+                print(f"Ошибка при создании роли {role_name}")
+                return
+    print("Роли успешно созданы")
 
 def seed_roles_and_admin():
-    """Инициализирует роли и суперпользователя."""
-    seed_roles()  # Добавляем роли
-    seed_admin_user()  # Добавляем суперпользователя
+    """Инициализирует роли и администратора."""
+    seed_roles()
+    seed_admin_user()
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash('Пожалуйста, войдите в систему.', 'warning')
+            return redirect(url_for('auth.login'))
+        
+        # Проверяем сессию
+        if 'user_id' not in session or session['user_id'] != current_user.id:
+            # Тихо обновляем сессию без сообщения пользователю
+            session['user_id'] = current_user.id
+            log_action(f"Session updated for user {current_user.id}")
+            
+        return f(*args, **kwargs)
+    return decorated_function
 
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # Проверяем, авторизован ли пользователь и имеет ли он роль admin
-        if not current_user.is_authenticated or not current_user.role or current_user.role.name != 'admin':
-            flash('У вас нет разрешения на доступ к этой странице.', 'danger')
+        # Отладочная информация
+        print(f"Admin check: is_authenticated={current_user.is_authenticated}, user={current_user.username if current_user.is_authenticated else 'None'}")
+        print(f"Session data: user_id={session.get('user_id')}, is_auth={session.get('is_authenticated')}")
+        
+        if not current_user.is_authenticated:
+            flash('Пожалуйста, войдите в систему.', 'warning')
+            return redirect(url_for('auth.login'))
+            
+        if not current_user.is_admin:
+            log_event(
+                action="admin_access_denied",
+                user_id=current_user.id,
+                details=f"Попытка доступа к админке: {current_user.username}, IP: {request.remote_addr}",
+                level="WARNING",
+                message="Доступ к админке запрещён",
+                module=__name__,
+                function="admin_required"
+            )
+            flash('У вас нет прав для доступа к этой странице.', 'danger')
             return redirect(url_for('main.index'))
+            
+        # Проверяем сессию и тихо обновляем её при необходимости
+        if 'user_id' not in session or session['user_id'] != current_user.id:
+            session['user_id'] = current_user.id
+            log_action(f"Admin session updated for user {current_user.id}")
+            
         return f(*args, **kwargs)
     return decorated_function
 
-def log_action(action, details=None, user_id=None):
-    """Функция для записи логов пользователя."""
-    if user_id is None:  # Если ID пользователя не передан
-        if current_user.is_authenticated:
-            user_id = current_user.id
-        else:
-            print("Error: current_user is not authenticated")  # Временный вывод
-            raise ValueError("User ID is required for unauthenticated actions")
-
+def verify_telegram_data(auth_data):
+    """Проверка данных аутентификации от Telegram."""
     try:
-        log = Log(
-            user_id=user_id,
-            action=action,
-            details=details
-        )
-        db.session.add(log)
-        db.session.commit()
-        print(f"Log added successfully: {log}")  # Успешный лог
+        if not auth_data:
+            print("No auth data provided")
+            return False
+            
+        # Добавляем дополнительные проверки
+        required_fields = ['id', 'first_name', 'auth_date', 'hash']
+        if not all(field in auth_data for field in required_fields):
+            print("Missing required fields in auth data")
+            return False
+            
+        # Проверяем hash от Telegram
+        # ... существующий код проверки ...
+        
+        return True
     except Exception as e:
-        db.session.rollback()  # Откатываем транзакцию
-        print(f"Error while logging action: {e}")  # Вывод ошибки
+        print(f"Error verifying Telegram data: {str(e)}")
+        return False

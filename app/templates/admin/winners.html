@@ -1,0 +1,157 @@
+{% extends "admin/base.html" %}
+
+{% block admin_content %}
+<div class="container mt-4">
+	<h2>История выигрышей</h2>
+
+	<!-- Фильтры -->
+	<div class="card mb-4">
+		<div class="card-body">
+			<form method="get">
+				<div class="row align-items-end">
+					<!-- Фильтры -->
+					<div class="col-md-2">
+						<label for="quiz_id" class="form-label">Квиз</label>
+						<select name="quiz_id" id="quiz_id" class="form-select filter-equal">
+							<option value="">Все квизы</option>
+							{% for quiz in quizzes %}
+							<option value="{{ quiz.id }}" {% if request.args.get('quiz_id')|int==quiz.id %}selected{%
+								endif %}>
+								Квиз #{{ quiz.id }} ({{ quiz.start_time.strftime('%Y-%m-%d') }})
+							</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="col-md-2">
+						<label for="user_id" class="form-label">Победитель</label>
+						<select name="user_id" id="user_id" class="form-select filter-equal">
+							<option value="">Все победители</option>
+							{% for user in users %}
+							<option value="{{ user.id }}" {% if request.args.get('user_id')|int==user.id %}selected{%
+								endif %}>
+								{{ user.username }}
+							</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="col-md-2">
+						<label for="date_from" class="form-label">Дата с</label>
+						<input type="date" class="form-control filter-equal" id="date_from" name="date_from"
+							value="{{ request.args.get('date_from', '') }}">
+					</div>
+					<div class="col-md-2">
+						<label for="date_to" class="form-label">Дата по</label>
+						<input type="date" class="form-control filter-equal" id="date_to" name="date_to"
+							value="{{ request.args.get('date_to', '') }}">
+					</div>
+
+					<!-- Кнопки -->
+					<div class="col-md-2">
+						<label class="form-label d-md-block d-none">&nbsp;</label>
+						<button type="submit" class="btn btn-primary filter-btn">Фильтровать</button>
+					</div>
+					<div class="col-md-2">
+						<label class="form-label d-md-block d-none">&nbsp;</label>
+						<a href="{{ url_for('admin.view_winners') }}"
+							class="btn btn-secondary filter-btn d-flex align-items-center justify-content-center">Сбросить</a>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Экспорт -->
+	<div class="mb-3">
+		<a href="{{ url_for('admin.export_winners') }}" class="btn btn-success">
+			<i class="fas fa-file-export"></i> Экспорт в CSV
+		</a>
+	</div>
+
+	<!-- Таблица выигрышей -->
+	<div class="table-responsive">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Квиз</th>
+					<th>Победитель</th>
+					<th>Сумма</th>
+					<th>Дата</th>
+					<th>Действия</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for winner in winners %}
+				<tr>
+					<td>{{ winner.id }}</td>
+					<td>
+						<a href="{{ url_for('admin.view_quizzes', quiz_id=winner.quiz_id) }}">
+							Квиз #{{ winner.quiz_id }}
+						</a>
+					</td>
+					<td>
+						<a href="{{ url_for('admin.view_users') }}#user-{{ winner.user_id }}">
+							{{ winner.user.username }}
+						</a>
+					</td>
+					<td>{{ winner.prize_amount }} ₽</td>
+					<td>{{ winner.won_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+					<td>
+						<button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal"
+							data-bs-target="#winnerDetails{{ winner.id }}">
+							<i class="fas fa-info-circle"></i> Детали
+						</button>
+					</td>
+				</tr>
+
+				<!-- Модальное окно с деталями -->
+				<div class="modal fade" id="winnerDetails{{ winner.id }}" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title">Детали выигрыша #{{ winner.id }}</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+							</div>
+							<div class="modal-body">
+								<dl class="row">
+									<dt class="col-sm-4">Квиз:</dt>
+									<dd class="col-sm-8">{{ winner.quiz.start_time.strftime('%Y-%m-%d %H:%M') }}</dd>
+
+									<dt class="col-sm-4">Победитель:</dt>
+									<dd class="col-sm-8">{{ winner.user.username }} ({{ winner.user.email }})</dd>
+
+									<dt class="col-sm-4">Сумма:</dt>
+									<dd class="col-sm-8">{{ winner.prize_amount }} ₽</dd>
+
+									<dt class="col-sm-4">Дата выигрыша:</dt>
+									<dd class="col-sm-8">{{ winner.won_at.strftime('%Y-%m-%d %H:%M:%S') }}</dd>
+								</dl>
+							</div>
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+	<!-- Пагинация -->
+	{% if pagination.pages > 1 %}
+	<nav aria-label="Page navigation">
+		<ul class="pagination justify-content-center">
+			{% for page in pagination.iter_pages() %}
+			{% if page %}
+			<li class="page-item {% if page == pagination.page %}active{% endif %}">
+				<a class="page-link" href="{{ url_for('admin.view_winners', page=page, **request.args) }}">
+					{{ page }}
+				</a>
+			</li>
+			{% else %}
+			<li class="page-item disabled"><span class="page-link">...</span></li>
+			{% endif %}
+			{% endfor %}
+		</ul>
+	</nav>
+	{% endif %}
+</div>
+{% endblock %}

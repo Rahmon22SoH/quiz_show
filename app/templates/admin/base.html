@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block body_attribs %} data-page="admin"{% endblock %}
+
+{% block head %}
+{{ super() }}
+<!-- Font Awesome для админки -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<!-- Стили админки -->
+<link href="{{ url_for('static', filename='css/admin.css') }}" rel="stylesheet">
+
+<!-- Возвращаем кастомный скрипт мобильного меню -->
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		// Полностью заменяем навигацию на мобильных устройствах
+		if (window.innerWidth <= 768) {
+			// Находим все необходимые элементы навигации
+			const navbar = document.querySelector('.navbar-collapse');
+			const toggleButton = document.querySelector('.navbar-toggler');
+			const adminContent = document.querySelector('.admin-content');
+			let overlay = null;
+
+			// Состояние мобильного меню
+			let isMenuOpen = false;
+
+			// Функция для закрытия мобильного меню
+			function closeMobileMenu() {
+				if (!isMenuOpen) return; // Если меню уже закрыто, ничего не делаем
+
+				if (navbar) navbar.classList.remove('show');
+				document.body.classList.remove('menu-open');
+				document.documentElement.style.overflow = '';
+
+				if (adminContent) {
+					adminContent.style.opacity = '1';
+					adminContent.style.pointerEvents = 'auto';
+				}
+
+				if (overlay) {
+					overlay.classList.remove('show');
+					setTimeout(function () {
+						if (overlay && overlay.parentNode) {
+							overlay.parentNode.removeChild(overlay);
+							overlay = null;
+						}
+					}, 300);
+				}
+				isMenuOpen = false;
+			}
+
+			// Функция для открытия мобильного меню
+			function openMobileMenu() {
+				// Не открываем меню, если уже открыто модальное окно Bootstrap
+				if (document.body.classList.contains('modal-open')) {
+					return;
+				}
+
+				if (navbar) navbar.classList.add('show');
+				document.body.classList.add('menu-open');
+				document.documentElement.style.overflow = 'hidden';
+
+				if (adminContent) {
+					adminContent.style.opacity = '0.3';
+					adminContent.style.pointerEvents = 'none';
+				}
+
+				if (!overlay) {
+					overlay = document.createElement('div');
+					overlay.className = 'menu-overlay';
+					document.body.appendChild(overlay);
+
+					overlay.addEventListener('click', closeMobileMenu);
+
+					setTimeout(function () {
+						if (overlay) overlay.classList.add('show');
+					}, 10);
+				}
+				isMenuOpen = true;
+			}
+
+			// Устанавливаем позицию навбара
+			const navbarElement = document.querySelector('.navbar');
+			if (navbarElement) {
+				navbarElement.style.position = 'fixed';
+				navbarElement.style.top = '0';
+				navbarElement.style.left = '0';
+				navbarElement.style.right = '0';
+				navbarElement.style.zIndex = '1060';
+			}
+
+			// Отключаем стандартный Bootstrap обработчик (важно!)
+			if (toggleButton) {
+				toggleButton.removeAttribute('data-bs-toggle');
+				toggleButton.removeAttribute('data-bs-target');
+
+				// Добавляем собственный обработчик для кнопки гамбургера
+				toggleButton.addEventListener('click', function (e) {
+					e.preventDefault();
+					e.stopPropagation();
+
+					if (isMenuOpen) {
+						closeMobileMenu();
+					} else {
+						openMobileMenu();
+					}
+				});
+			}
+
+			// Добавляем слушатель на все модальные окна Bootstrap на странице
+			const modals = document.querySelectorAll('.modal');
+			modals.forEach(modal => {
+				modal.addEventListener('show.bs.modal', function (event) {
+					// Логируем событие для отладки
+					console.log('Bootstrap modal is about to show. Attempting to close mobile menu.', event.target);
+					// Перед показом модального окна, принудительно закрываем мобильное меню
+					closeMobileMenu();
+					// Дополнительно гарантируем, что контент активен
+					const adminContentElement = document.querySelector('.admin-content');
+					if (adminContentElement) {
+						adminContentElement.style.opacity = '1';
+						adminContentElement.style.pointerEvents = 'auto';
+						console.log('Forced admin-content to be interactive.');
+					}
+				});
+			});
+
+			// Применяем важные стили к документу для предотвращения отступов
+			document.documentElement.style.width = '100%';
+			document.documentElement.style.maxWidth = '100%';
+			document.documentElement.style.overflowX = 'hidden';
+			document.body.style.width = '100%';
+			document.body.style.maxWidth = '100%';
+			document.body.style.overflowX = 'hidden';
+
+			// Добавляем класс для мобильной версии
+			document.body.classList.add('mobile-admin');
+
+			// Устанавливаем корректный отступ для контента
+			if (adminContent) {
+				adminContent.style.marginTop = '56px';
+				adminContent.style.position = 'relative';
+				adminContent.style.zIndex = '1040';
+			}
+		}
+	});
+</script>
+{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	<div class="container">
+		<a class="navbar-brand d-flex align-items-center" href="{{ url_for('admin.dashboard') }}">
+			<i class="fas fa-shield-alt me-2"></i>
+			<span class="d-none d-sm-inline">Админ-панель</span>
+			<span class="d-inline d-sm-none">Админ</span>
+		</a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar"
+			aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="adminNavbar">
+			<ul class="navbar-nav admin-nav me-auto">
+				<li class="nav-item">
+					<a class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}"
+						href="{{ url_for('admin.dashboard') }}">
+						<i class="fas fa-fw fa-tachometer-alt"></i>
+						<span>Панель управления</span>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link {% if request.endpoint == 'admin.view_quizzes' %}active{% endif %}"
+						href="{{ url_for('admin.view_quizzes') }}">
+						<i class="fas fa-gamepad"></i>
+						<span>Квизы</span>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link {% if request.endpoint == 'admin.view_winners' %}active{% endif %}"
+						href="{{ url_for('admin.view_winners') }}">
+						<i class="fas fa-trophy"></i>
+						<span>Победители</span>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link {% if request.endpoint == 'admin.view_users' %}active{% endif %}"
+						href="{{ url_for('admin.view_users') }}">
+						<i class="fas fa-users"></i>
+						<span>Пользователи</span>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link {% if request.endpoint == 'admin.view_logs' %}active{% endif %}"
+						href="{{ url_for('admin.view_logs') }}">
+						<i class="fas fa-list-alt"></i>
+						<span>Логи</span>
+					</a>
+				</li>
+			</ul>
+
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link" href="{{ url_for('main.index') }}">
+						<i class="fas fa-home"></i>
+						<span>На сайт</span>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="{{ url_for('auth.logout') }}">
+						<i class="fas fa-sign-out-alt"></i>
+						<span>Выход</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<main class="admin-content">
+	<div class="container">
+		{% from "macros/flash_messages.html" import render_flash_messages %}
+		{{ render_flash_messages() }}
+		{% block admin_content %}{% endblock %}
+	</div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}

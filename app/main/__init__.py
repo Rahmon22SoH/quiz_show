@@ -2,4 +2,5 @@ from flask import Blueprint
 
 main = Blueprint('main', __name__)
 
-from app.main import views, errors  # Импортируем маршруты и обработчики ошибок
+# Импортируем views и errors *после* создания объекта Blueprint.
+from app.main import views, errors

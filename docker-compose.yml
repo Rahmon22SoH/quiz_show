@@ -1,0 +1,79 @@
+services:
+  web:
+    build: .
+    command: gunicorn -w 2 -b 0.0.0.0:5000 --timeout 60 hello:app
+    env_file:
+      - .env.docker
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  celery_worker:
+    build: .
+    command: celery -A celery_worker.celery worker --loglevel=info --pool=solo
+    env_file:
+      - .env.docker
+    depends_on:
+      - web
+      - redis
+      - db
+    restart: always
+
+  celery_beat:
+    build: .
+    command: celery -A celery_worker.celery beat --loglevel=info
+    env_file:
+      - .env.docker
+    depends_on:
+      - web
+      - redis
+      - db
+    restart: always
+
+  db:
+    image: postgres:16.4
+    environment:
+      POSTGRES_USER: newuser
+      POSTGRES_PASSWORD: newpassword
+      POSTGRES_DB: newdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7.4.2
+    ports:
+      - "6379:6379"
+
+  loki:
+    image: grafana/loki:2.9.2
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+
+  promtail:
+    image: grafana/promtail:2.9.2
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./app/promtail-config.yaml:/etc/promtail/promtail-config.yaml
+    command: -config.file=/etc/promtail/promtail-config.yaml
+
+  grafana:
+    image: grafana/grafana:10.2.3
+    ports:
+      - "3000:3000"
+    depends_on:
+      - loki
+
+volumes:
+  pgdata:

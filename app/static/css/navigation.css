@@ -1,0 +1,1280 @@
+/* Общие стили */
+html,
+body {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+main {
+    flex: 1 0 auto;
+    padding: 2rem 0;
+}
+
+.footer {
+    flex-shrink: 0;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    padding: 1rem 0;
+    margin-top: auto;
+}
+
+/* Стили для навигационной панели */
+.navbar {
+    background-color: #343a40 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    padding: 0.5rem 1rem !important;
+}
+
+.navbar-brand {
+    color: rgba(255, 255, 255, .8) !important;
+}
+
+.navbar-brand:hover {
+    color: #fff !important;
+}
+
+.navbar-nav .nav-link {
+    color: #333;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: #007bff;
+}
+
+/* Стили для выпадающего меню */
+.dropdown-menu {
+    border: none !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+    padding: 0.5rem 0 !important;
+    background-color: #343a40 !important;
+    margin-top: 0.5rem !important;
+}
+
+.dropdown-item {
+    padding: 0.8rem 1.5rem !important;
+    font-weight: 500 !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    transform: translateY(-2px) !important;
+}
+
+.dropdown-item i {
+    font-size: 1.1rem !important;
+    width: 20px !important;
+    text-align: center !important;
+}
+
+.dropdown-divider {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    margin: 0.5rem 0 !important;
+}
+
+/* Стили для кнопки дропдауна */
+.nav-item.dropdown .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    color: rgba(255, 255, 255, .8);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.nav-item.dropdown .nav-link:hover,
+.nav-item.dropdown .nav-link.active {
+    color: #fff;
+    background-color: rgba(255, 255, 255, .1);
+}
+
+/* Мобильные стили для дропдауна */
+@media (max-width: 991px) {
+    .dropdown-menu {
+        background-color: #2b3035 !important;
+        border-radius: 8px !important;
+        margin-top: 0.25rem !important;
+        width: 100% !important;
+    }
+
+    .dropdown-item {
+        padding: 0.75rem 1rem !important;
+        margin: 0.25rem 0 !important;
+    }
+
+    .nav-item.dropdown .nav-link {
+        justify-content: flex-start !important;
+        width: 100% !important;
+    }
+
+    .navbar-nav .dropdown-menu {
+        position: static !important;
+        float: none !important;
+        width: auto !important;
+        margin-top: 0 !important;
+        background-color: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        padding: 0 1rem !important;
+    }
+
+    .dropdown-item {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        border-radius: 8px !important;
+        margin: 0.25rem 0 !important;
+    }
+
+    .dropdown-item:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+}
+
+/* Стили для мобильного меню */
+.navbar-toggler {
+    border: none !important;
+    padding: 0.25rem !important;
+    background: transparent !important;
+}
+
+.navbar-toggler:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 0.8)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") !important;
+}
+
+/* Стили для кнопок аутентификации */
+.auth-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.auth-btn:hover {
+    background-color: #0056b3;
+    color: white;
+}
+
+/* Адаптивность */
+@media (max-width: 991.98px) {
+    .navbar-nav {
+        padding-top: 1rem;
+    }
+
+    .navbar-collapse {
+        margin-top: 0.5rem;
+    }
+}
+
+/* Стили для управления справкой */
+.help-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+.help-toggle:hover {
+    background-color: #0056b3;
+}
+
+.help-container {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 300px;
+    max-height: 60vh;
+    overflow-y: auto;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    z-index: 999;
+    display: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.help-container.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.help-container h4 {
+    color: #007bff;
+    margin-bottom: 1rem;
+}
+
+.help-container ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.help-container li {
+    margin-bottom: 0.5rem;
+}
+
+.help-container .help-section {
+    margin-bottom: 1.5rem;
+}
+
+.help-container .help-section:last-child {
+    margin-bottom: 0;
+}
+
+.help-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    font-size: 1.25rem;
+    transition: color 0.3s ease;
+}
+
+.help-close:hover {
+    color: #333;
+}
+
+/* Стили для фикса мобильного отображения */
+@media (max-width: 991px) {
+    .d-none.d-lg-block {
+        display: none !important;
+    }
+
+    /* Базовый стиль для скрытия кнопок авторизации в мобильной версии */
+    .navbar .right-auth-btn:not(.navbar-collapse .auth-btn) {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        position: absolute !important;
+        left: -9999px !important;
+        pointer-events: none !important;
+    }
+}
+
+/* Стили для страницы входа */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 200px);
+    padding: 2rem 1rem;
+}
+
+.login-form {
+    width: 100%;
+    max-width: 400px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+}
+
+.login-form h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+    text-align: center;
+}
+
+.login-form .form-control {
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.login-form .btn-primary {
+    width: 100%;
+    padding: 0.75rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.login-form .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.login-links {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.login-links a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.login-links a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Скрываем кнопку входа через Telegram в мобильном меню */
+.hide-mobile-auth {
+    display: none !important;
+}
+
+/* Медиа-запрос для мобильных устройств */
+@media (max-width: 576px) {
+    .login-form {
+        padding: 1.5rem;
+    }
+}
+
+/* Стили для блока профиля пользователя в навбаре */
+.navbar .user-profile {
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.navbar .user-profile:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.navbar .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    object-fit: cover;
+    border: 2px solid #f8f9fa;
+}
+
+.navbar .user-name {
+    font-weight: 500;
+    color: #333;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 576px) {
+    .navbar .user-name {
+        max-width: 80px;
+    }
+
+    .navbar .user-avatar {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+/* Стили для карточек */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0;
+    padding: 1rem;
+}
+
+/* Стили для алертов */
+.alert {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.alert-dismissible .btn-close {
+    padding: 1.25rem;
+}
+
+/* Стили для кнопок */
+.btn {
+    border-radius: 8px;
+    padding: 0.8rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    transform: translateY(-2px);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .navbar-nav {
+        padding: 0.5rem 0;
+    }
+
+    .navbar-nav .nav-link {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin: 0.25rem 0;
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .navbar-nav .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar-brand {
+        position: absolute !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        margin: 0 !important;
+        font-size: 1.4rem !important;
+        text-align: center !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .navbar-toggler {
+        border: none;
+        padding: 0.5rem;
+        position: relative !important;
+        margin-left: auto !important;
+        order: 2 !important;
+    }
+
+    .navbar-toggler:focus {
+        box-shadow: none;
+    }
+
+    .navbar-collapse {
+        background-color: #343a40;
+        border-radius: 8px;
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .navbar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        z-index: 1060 !important;
+    }
+
+    main {
+        padding-top: 70px !important;
+    }
+
+    body[data-page="auth"] .navbar>.container {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+    }
+
+    body[data-page="auth"] .navbar-brand {
+        position: relative !important;
+        left: 0 !important;
+        transform: none !important;
+        margin-right: auto !important;
+        flex: 1 !important;
+    }
+
+    body[data-page="auth"] .navbar-toggler {
+        margin-left: 10px !important;
+        order: 2 !important;
+    }
+
+    .nav-item .nav-link img {
+        width: 30px;
+        height: 30px;
+        margin-right: 0.5rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin: 0.25rem 0;
+    }
+
+    /* Изменяем селектор, чтобы стиль применялся только к бейджам в элементах навигации */
+    .nav-item .badge {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    /* Фиксированная шапка для всех страниц */
+    .navbar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        z-index: 1060 !important;
+    }
+
+    /* Отступ для основного контента */
+    main {
+        padding-top: 70px !important;
+    }
+
+    /* Центрирование бренда */
+    .navbar>.container>.navbar-brand {
+        position: absolute !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        margin: 0 !important;
+        font-size: 1.4rem !important;
+        text-align: center !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* Для иконки в бренде */
+    .navbar-brand i {
+        display: inline-flex !important;
+        align-items: center !important;
+        font-size: 0.9rem !important;
+        margin-right: 6px !important;
+        vertical-align: middle !important;
+    }
+
+    /* Позиционирование кнопки-бургера */
+    .navbar-toggler {
+        margin-left: auto !important;
+        position: relative !important;
+        z-index: 5 !important;
+    }
+
+    /* Стили для кнопок в навигации */
+    .navbar .auth-btn,
+    .auth-container .auth-btn {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    /* Иконки в мобильной версии */
+    .navbar-brand i,
+    .nav-link i,
+    .auth-btn i {
+        font-size: 0.85rem;
+        margin-right: 4px;
+    }
+}
+
+/* Планшеты */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .navbar-nav .nav-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .navbar-brand {
+        position: relative !important;
+        left: auto !important;
+        right: 0 !important;
+        transform: none !important;
+        text-align: left !important;
+        justify-content: flex-start !important;
+    }
+}
+
+/* Анимации для мобильного меню */
+@media (max-width: 768px) {
+    .navbar-collapse {
+        transform-origin: top;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .navbar-collapse.collapsing {
+        transform: scaleY(0);
+    }
+
+    .navbar-collapse.show {
+        transform: scaleY(1);
+    }
+
+    .nav-link:active {
+        transform: scale(0.98);
+    }
+
+    /* Удаляем дублирующиеся стили для бейджей */
+    .badge {
+        margin-left: 0.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .navbar-nav {
+        align-items: center;
+    }
+
+    .nav-btn:not(.navbar-brand) {
+        margin: 0 0.5rem;
+    }
+}
+
+/* Дополнительные стили для форм */
+.form-control {
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+}
+
+.input-group-text {
+    border-radius: 0 8px 8px 0;
+    background-color: #e9ecef;
+}
+
+/* Анимация для индикатора загрузки */
+.spinner-border {
+    animation: spinner-border 1s linear infinite;
+}
+
+/* Стили для сообщений об ошибках */
+.alert {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Стили для страницы входа */
+.auth-container {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: calc(100vh - 70px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    position: relative !important;
+}
+
+.auth-container::before {
+    content: none !important;
+}
+
+.auth-container .row {
+    width: 100% !important;
+    position: relative !important;
+    margin: 0 !important;
+}
+
+.auth-card {
+    border: none !important;
+    border-radius: 15px !important;
+    background-color: #ffffff !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(0) !important;
+    max-width: 550px !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+}
+
+.auth-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+}
+
+.auth-card .card-body {
+    padding: 2rem !important;
+    text-align: center !important;
+}
+
+.auth-card h2 {
+    color: #343a40;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+/* Модификация формы для более современного вида */
+.auth-form .form-control {
+    padding: 0.75rem 1rem;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    background-color: #f8f9fa;
+    transition: all 0.2s ease;
+}
+
+.auth-form .form-control:focus {
+    border-color: #0088cc;
+    background-color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 136, 204, 0.25);
+}
+
+.btn-telegram {
+    background-color: #0088cc !important;
+    border-color: #0088cc !important;
+    color: white !important;
+    border-radius: 10px !important;
+    padding: 0.75rem 1.5rem !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 6px rgba(0, 136, 204, 0.2) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+}
+
+.btn-telegram:hover {
+    background-color: #0077b5 !important;
+    border-color: #0077b5 !important;
+    color: white !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 12px rgba(0, 136, 204, 0.3) !important;
+}
+
+.btn-telegram:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 4px rgba(0, 136, 204, 0.3) !important;
+}
+
+.btn-telegram i {
+    margin-right: 8px !important;
+}
+
+/* Адаптивные стили для мобильных устройств */
+@media (max-width: 768px) {
+    .auth-container {
+        padding-top: 70px;
+        min-height: 100vh;
+    }
+
+    .auth-card {
+        margin: 1rem auto;
+        max-width: 90%;
+    }
+
+    .auth-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .auth-btn {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+        max-width: 220px;
+    }
+}
+
+/* Исправление для Telegram виджета на странице входа */
+#telegram-login {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.loading-indicator {
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.loading-indicator .spinner-border {
+    margin: 0 auto;
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Стиль для иконок */
+.navbar-brand i,
+.nav-link i,
+.auth-btn i {
+    font-size: 0.9rem;
+    margin-right: 6px;
+}
+
+/* Главный бренд в навигации - размер и выравнивание для десктопа */
+.navbar>.container>.navbar-brand {
+    font-size: 1.1rem;
+    position: relative;
+    left: auto;
+    right: 0;
+    transform: none;
+    margin-right: 0;
+    text-align: left;
+    display: flex;
+    align-items: center;
+}
+
+/* Стили для кнопок аутентификации в навигации */
+.navbar .auth-btn,
+.navbar .d-none.d-lg-block.right-auth-btn .auth-btn {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: rgba(255, 255, 255, .8) !important;
+    padding: 0.8rem 1rem !important;
+    font-weight: 500 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    font-size: 1rem !important;
+    margin: 0 !important;
+}
+
+.navbar .auth-btn:hover,
+.navbar .d-none.d-lg-block.right-auth-btn .auth-btn:hover {
+    background-color: rgba(255, 255, 255, .1) !important;
+    color: #fff !important;
+    transform: translateY(-2px) !important;
+}
+
+.navbar .auth-btn i,
+.navbar .d-none.d-lg-block.right-auth-btn .auth-btn i {
+    font-size: 1.1rem !important;
+    margin-right: 0.5rem !important;
+}
+
+/* Мобильные стили для навигации */
+@media (max-width: 768px) {
+    .navbar>.container>.navbar-brand {
+        position: absolute !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        margin: 0 !important;
+        font-size: 1.4rem !important;
+        text-align: center !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* Для иконки в бренде */
+    .navbar-brand i {
+        display: inline-flex !important;
+        align-items: center !important;
+        font-size: 0.9rem !important;
+        margin-right: 6px !important;
+        vertical-align: middle !important;
+    }
+
+    .navbar-brand i,
+    .nav-link i,
+    .auth-btn i {
+        font-size: 0.85rem;
+        margin-right: 4px;
+    }
+}
+
+/* Стили для красивого разделителя */
+.divider {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.divider span {
+    padding: 0 1rem;
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+/* Стили для алертов об ошибках */
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    border: none;
+    border-left: 4px solid #dc3545;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+/* Десктопные стили для позиционирования элементов */
+@media (min-width: 992px) {
+    .navbar-brand {
+        margin-left: 0;
+        margin-right: 1rem;
+    }
+
+    .navbar-collapse {
+        flex-grow: 1;
+    }
+
+    /* Стили для кнопки входа, прижатой строго вправо */
+    .navbar-nav.ms-auto {
+        margin-left: auto !important;
+        margin-right: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .navbar-nav .auth-btn {
+        padding: 0.5rem 1.5rem !important;
+        font-size: 1rem !important;
+        margin-right: 0 !important;
+    }
+
+    /* Максимально прижимаем кнопку к правому краю */
+    .auth-btn-container {
+        margin-left: auto !important;
+        margin-right: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    /* Стили для кнопки "Главная" в навигации */
+    .navbar-nav .nav-link {
+        font-size: 1rem !important;
+        font-weight: 500 !important;
+    }
+}
+
+/* Стили для кнопки входа через Telegram в правой части (в крайнем правом углу) */
+.navbar .d-none.d-lg-block.right-auth-btn {
+    margin-left: auto !important;
+    margin-right: 0 !important;
+    padding-right: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.navbar .d-none.d-lg-block.right-auth-btn .auth-btn {
+    color: white;
+    padding: 0.5rem 1.5rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.navbar .d-none.d-lg-block.right-auth-btn .auth-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Специальные медиа запросы для корректного отображения на разных размерах экрана */
+@media (min-width: 992px) {
+    .navbar .d-none.d-lg-block.right-auth-btn {
+        display: flex !important;
+        margin-left: auto !important;
+        margin-right: 0 !important;
+    }
+}
+
+/* Корректировка для мобильной версии */
+@media (max-width: 991px) {
+    .navbar .right-auth-btn {
+        display: none !important;
+    }
+
+    /* Полное скрытие кнопки в мобильном меню */
+    .hide-mobile-auth,
+    .navbar-nav.d-lg-none .hide-mobile-auth {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Полное скрытие кнопки входа в шапке на мобильных устройствах */
+    .navbar .d-none.d-lg-block.right-auth-btn,
+    .navbar .hide-in-mobile,
+    .navbar .d-none.d-lg-block.right-auth-btn *,
+    .navbar .hide-in-mobile * {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: absolute !important;
+        left: -9999px !important;
+        pointer-events: none !important;
+    }
+
+    /* Глобальное правило для всех auth-btn в шапке, но не в навигационном меню */
+    .navbar .auth-btn:not(.navbar-collapse .auth-btn) {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: absolute !important;
+        left: -9999px !important;
+        pointer-events: none !important;
+    }
+
+    /* Скрытие для контейнера кнопки d-none d-lg-block не работает в некоторых браузерах */
+    .navbar>.container>.d-none.d-lg-block {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        position: absolute !important;
+        pointer-events: none !important;
+    }
+
+    /* Принудительно показываем кнопки только внутри открытого меню */
+    .navbar-collapse.show .auth-btn {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: auto !important;
+        height: auto !important;
+    }
+
+    /* Убедимся, что на мобильных устройствах телеграм виджет отображается правильно */
+    #telegram-login {
+        width: 100% !important;
+        overflow: visible !important;
+        padding: 0 !important;
+        margin: 1rem auto !important;
+    }
+
+    #telegram-login iframe {
+        width: 100% !important;
+        max-width: none !important;
+        display: block !important;
+        transform: none !important;
+        margin: 0 auto !important;
+    }
+
+    .auth-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .auth-container {
+        min-height: calc(100vh - 120px);
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+}
+
+/* Скрываем кнопку входа через Telegram в мобильном меню */
+.hide-mobile-auth {
+    display: none !important;
+}
+
+/* Стили для корректного отображения Telegram-виджета */
+#telegram-login {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    position: relative !important;
+    overflow: visible !important;
+    z-index: 100 !important;
+}
+
+#telegram-login iframe {
+    display: block !important;
+    margin: 0 auto !important;
+    position: relative !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    max-width: 100% !important;
+    min-height: 50px !important;
+    pointer-events: auto !important;
+}
+
+/* Специальные стили для кнопки Telegram Login */
+.tgme_widget_login_button {
+    margin: 0 auto !important;
+    position: relative !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    display: block !important;
+}
+
+/* Стили для карточки авторизации Telegram */
+.auth-card {
+    width: 100% !important;
+    max-width: 550px !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+.auth-card .card-body {
+    padding: 2rem !important;
+    overflow: visible !important;
+    text-align: center !important;
+}
+
+/* Медиа-запрос для корректного отображения на мобильных устройствах */
+@media (max-width: 576px) {
+    #telegram-login {
+        width: 100% !important;
+        overflow: visible !important;
+        padding: 0 !important;
+        margin: 1rem auto !important;
+    }
+
+    #telegram-login iframe {
+        transform: none !important;
+        width: 100% !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        margin: 0 auto !important;
+    }
+
+    .auth-card .card-body {
+        padding: 1.5rem 1rem !important;
+    }
+}
+
+/* Общие стили для всех кнопок навигации */
+.navbar-nav .nav-link,
+.navbar-brand,
+.auth-btn,
+.dropdown-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    padding: 0.8rem 1rem !important;
+    color: rgba(255, 255, 255, .8) !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    font-weight: 500 !important;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-brand:hover,
+.auth-btn:hover,
+.dropdown-item:hover,
+.navbar-nav .nav-link.active {
+    color: #fff !important;
+    background-color: rgba(255, 255, 255, .1) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Специальные стили для кнопки входа через Telegram в навигации */
+.navbar .auth-btn {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-size: 1rem !important;
+    margin: 0 !important;
+}
+
+.navbar .auth-btn:hover {
+    background-color: rgba(255, 255, 255, .1) !important;
+    box-shadow: none !important;
+}
+
+.navbar .auth-btn i {
+    font-size: 1.1rem !important;
+    margin-right: 0.5rem !important;
+}
+
+/* Стили для мобильной версии */
+@media (max-width: 991px) {
+    .navbar .auth-btn {
+        width: 100% !important;
+        justify-content: flex-start !important;
+        padding: 0.8rem 1rem !important;
+        margin: 0.25rem 0 !important;
+        background-color: rgba(255, 255, 255, .05) !important;
+    }
+
+    .navbar .auth-btn:hover {
+        background-color: rgba(255, 255, 255, .1) !important;
+    }
+}

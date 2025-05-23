@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block title %}Вход через Telegram{% endblock %}
+
+{% block body_attribs %} data-page="auth" data-debug="{{ 'true' if config.DEBUG else 'false' }}"{% endblock %}
+
+{% block content %}
+<div class="container-fluid auth-container">
+	<div class="row justify-content-center align-items-center h-100 m-0">
+		<div class="col-md-6 col-sm-10 col-11">
+			<div class="card shadow-lg rounded-4 auth-card">
+				<div class="card-body text-center">
+					<h2 class="mb-4">Войти через Telegram</h2>
+					<div id="telegram-login" class="mb-4">
+						<script async src="https://telegram.org/js/telegram-widget.js?22"
+							data-telegram-login="{{ config.TELEGRAM_BOT_USERNAME }}" data-size="large"
+							data-onauth="onTelegramAuth(user)" data-request-access="write" data-radius="10"
+							data-auth-url="{{ url_for('auth.telegram_callback', _external=True) }}">
+							</script>
+					</div>
+					<div id="loading-indicator" style="display: none;" class="my-4">
+						<div class="spinner-border text-primary" role="status">
+							<span class="visually-hidden">Загрузка...</span>
+						</div>
+						<p class="mt-3 text-muted">Подождите, выполняется вход...</p>
+					</div>
+					<div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
+
+					<p class="mt-4 small text-muted">
+						Нажмите кнопку выше, чтобы войти через ваш аккаунт Telegram
+					</p>
+					<a href="{{ url_for('main.index') }}" class="btn btn-sm btn-outline-secondary mt-3">
+						<i class="fas fa-arrow-left me-1"></i> Вернуться на главную
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	// Функция для обработки TelegramAuth
+	function onTelegramAuth(user) {
+		// Получаем статус отладки из атрибута data-debug
+		const isDebugMode = document.body.getAttribute('data-debug') === 'true';
+
+		// Выводим лог только в режиме отладки
+		if (isDebugMode) {
+			console.log('Telegram auth process started');
+		}
+
+		document.getElementById('loading-indicator').style.display = 'block';
+		document.getElementById('error-message').style.display = 'none';
+
+		const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+		if (!csrfToken) {
+			handleAuthError('Ошибка безопасности: отсутствует CSRF-токен');
+			return;
+		}
+
+		// Преобразуем данные для отправки
+		// Не храним данные в глобальных переменных и не выводим в консоль
+		const authData = {
+			telegram_id: user.id.toString(),
+			first_name: user.first_name,
+			last_name: user.last_name || '',
+			username: user.username || '',
+			photo_url: user.photo_url || '',
+			auth_date: user.auth_date,
+			hash: user.hash
+		};
+
+		// Статусный лог без вывода чувствительных данных
+		if (isDebugMode) {
+			console.log('Auth request prepared');
+		}
+
+		// Отправляем запрос на сервер
+		fetch('/auth/telegram-callback', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': csrfToken,
+				'X-Requested-With': 'XMLHttpRequest'
+			},
+			credentials: 'same-origin',
+			body: JSON.stringify(authData)
+		})
+			.then(response => {
+				if (isDebugMode) {
+					console.log('Response status:', response.status);
+				}
+
+				if (!response.ok) {
+					throw new Error(`Ошибка HTTP: ${response.status}`);
+				}
+				return response.json();
+			})
+			.then(data => {
+				if (isDebugMode) {
+					console.log('Authentication ' + (data.success ? 'successful' : 'failed'));
+				}
+
+				if (data.success) {
+					// Перенаправляем пользователя на нужную страницу
+					window.location.replace(data.redirect);
+				} else {
+					// Отображаем ошибку от сервера без подробностей
+					throw new Error(data.error || 'Ошибка входа');
+				}
+			})
+			.catch(error => {
+				// Обрабатываем ошибку
+				handleAuthError(error.message || 'Неизвестная ошибка');
+			});
+	}
+
+	// Выделяем обработку ошибок в отдельную функцию
+	function handleAuthError(errorMessage) {
+		// Получаем статус отладки из атрибута data-debug
+		const isDebugMode = document.body.getAttribute('data-debug') === 'true';
+
+		if (isDebugMode) {
+			console.error('Authentication error occurred');
+		}
+
+		document.getElementById('error-message').textContent = 'Ошибка входа: ' + errorMessage;
+		document.getElementById('error-message').style.display = 'block';
+		document.getElementById('loading-indicator').style.display = 'none';
+	}
+
+	// Функция для исправления отображения Telegram виджета
+	function fixTelegramWidget() {
+		// Контейнер для Telegram виджета
+		const telegramContainer = document.getElementById('telegram-login');
+		if (!telegramContainer) return;
+
+		// Ищем iframe внутри контейнера
+		const iframes = telegramContainer.querySelectorAll('iframe');
+		if (iframes.length === 0) {
+			// Если iframe еще не загружен, повторим попытку через небольшую задержку
+			setTimeout(fixTelegramWidget, 100);
+			return;
+		}
+
+		iframes.forEach(iframe => {
+			// Гарантируем правильное отображение iframe
+			iframe.style.display = 'block';
+			iframe.style.margin = '0 auto';
+			iframe.style.maxWidth = '100%';
+			iframe.style.minWidth = '230px';
+			iframe.style.position = 'relative';
+
+			// Обеспечиваем центрирование кнопки внутри iframe
+			try {
+				if (iframe.contentDocument) {
+					const buttonStyles = document.createElement('style');
+					buttonStyles.textContent = `
+						.tgme_widget_login_button {
+							margin: 0 auto !important;
+							position: relative !important;
+							left: 50% !important;
+							transform: translateX(-50%) !important;
+							display: block !important;
+						}
+					`;
+					iframe.contentDocument.head.appendChild(buttonStyles);
+				}
+			} catch (e) {
+				// Ошибка из-за политики безопасности, игнорируем
+			}
+
+			// Удаляем трансформацию, которая может мешать кликабельности
+			iframe.style.transform = 'none';
+
+			// Убеждаемся, что iframe видим и доступен для взаимодействия
+			iframe.style.opacity = '1';
+			iframe.style.visibility = 'visible';
+			iframe.style.pointerEvents = 'auto';
+		});
+
+		// Дополнительное центрирование самого контейнера
+		telegramContainer.style.display = 'flex';
+		telegramContainer.style.justifyContent = 'center';
+		telegramContainer.style.alignItems = 'center';
+		telegramContainer.style.width = '100%';
+		telegramContainer.style.textAlign = 'center';
+	}
+
+	// Запускаем функцию исправления Telegram виджета после загрузки DOM
+	document.addEventListener('DOMContentLoaded', function () {
+		// Первая проверка сразу после загрузки DOM
+		fixTelegramWidget();
+
+		// Дополнительные проверки с интервалами
+		setTimeout(fixTelegramWidget, 500);
+		setTimeout(fixTelegramWidget, 1000);
+		setTimeout(fixTelegramWidget, 1500);
+		setTimeout(fixTelegramWidget, 2000);
+	});
+
+	// Обрабатываем изменение размера окна
+	window.addEventListener('resize', function () {
+		fixTelegramWidget();
+	});
+</script>
+
+{% block styles %}
+{{ super() }}
+<style>
+	/* Стили для карточки авторизации */
+	.auth-card {
+		background: #fff !important;
+		border: none !important;
+		border-radius: 15px !important;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+		overflow: visible !important;
+		transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+	}
+
+	.auth-card:hover {
+		transform: translateY(-5px) !important;
+		box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15) !important;
+	}
+
+	.card-body {
+		padding: 2rem !important;
+	}
+
+	/* Стили для Telegram виджета */
+	#telegram-login {
+		display: flex !important;
+		justify-content: center !important;
+		align-items: center !important;
+		width: 100% !important;
+		min-height: 50px !important;
+		margin: 1.5rem auto !important;
+		position: relative !important;
+	}
+
+	#telegram-login iframe {
+		display: block !important;
+		margin: 0 auto !important;
+		transform: none !important;
+		max-width: 100% !important;
+		min-width: 230px !important;
+	}
+
+	/* Стили для кнопки в iframe */
+	.tgme_widget_login_button {
+		margin: 0 auto !important;
+		position: relative !important;
+		left: 50% !important;
+		transform: translateX(-50%) !important;
+		display: block !important;
+	}
+
+	/* Адаптивные стили */
+	@media (max-width: 768px) {
+		.auth-card {
+			margin: 1rem !important;
+		}
+
+		.card-body {
+			padding: 1.5rem !important;
+		}
+
+		#telegram-login {
+			margin: 1rem auto !important;
+		}
+	}
+
+	/* Стили для кнопки "Вернуться на главную" */
+	.btn-outline-secondary {
+		border-color: #6c757d;
+		color: #6c757d;
+		padding: 0.5rem 1rem;
+		transition: all 0.2s ease;
+	}
+
+	.btn-outline-secondary:hover {
+		background-color: #6c757d;
+		color: white;
+		transform: translateY(-2px);
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	}
+
+	/* Стили для индикатора загрузки */
+	.spinner-border {
+		width: 2.5rem !important;
+		height: 2.5rem !important;
+		border-width: 0.25rem;
+	}
+</style>
+{% endblock %}
+{% endblock %}

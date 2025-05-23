@@ -1,25 +1,205 @@
-{% extends "admin_base.html" %}
+{% extends "admin/base.html" %}
 
-{% block page_content %}
-<h1>Пользователи</h1>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Имя пользователя</th>
-            <th>Email</th>
-            <th>Роль</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for user in users %}
-        <tr>
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.role.name if user.role else 'Нет роли' }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% block title %}Управление пользователями{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Пользователи</h5>
+            <div>
+                <button type="button" class="btn btn-sm btn-outline-primary" id="refreshUsers">
+                    <i class="fas fa-sync-alt"></i> Обновить
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Фото</th>
+                            <th>Имя пользователя</th>
+                            <th>Имя</th>
+                            <th>Роль</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>
+                                {% if user.profile_image %}
+                                <img src="{{ user.profile_image }}" alt="{{ user.username }}" class="rounded-circle"
+                                    width="30" height="30">
+                                {% else %}
+                                <div class="avatar-placeholder">{{ user.username[0]|upper }}</div>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.first_name }} {{ user.last_name }}</td>
+                            <td>
+                                <span class="badge {% if user.is_admin %}bg-danger{% else %}bg-primary{% endif %}">
+                                    {% if user.is_admin %}Админ{% else %}Пользователь{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {% if user.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {% if user.is_active %}Активен{% else %}Заблокирован{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <form action="{{ url_for('admin.toggle_user_status', user_id=user.id) }}" method="POST"
+                                    class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                    <button type="submit"
+                                        class="btn btn-xs {% if user.is_active %}btn-outline-warning{% else %}btn-outline-success{% endif %}"
+                                        style="font-size: 0.75rem; padding: 0.15rem 0.5rem;"
+                                        title="{% if user.is_active %}Заблокировать{% else %}Разблокировать{% endif %} пользователя">
+                                        {% if user.is_active %}
+                                        <i class="fas fa-ban"></i>
+                                        {% else %}
+                                        <i class="fas fa-check"></i>
+                                        {% endif %}
+                                    </button>
+                                </form>
+                                <button type="button" class="btn btn-xs btn-outline-info"
+                                    style="font-size: 0.75rem; padding: 0.15rem 0.5rem;" data-bs-toggle="modal"
+                                    data-bs-target="#userDetailsModal{{ user.id }}">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center">Нет пользователей</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальные окна с деталями пользователей -->
+{% for user in users %}
+<div class="modal fade" id="userDetailsModal{{ user.id }}" tabindex="-1"
+    aria-labelledby="userDetailsModalLabel{{ user.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userDetailsModalLabel{{ user.id }}">Информация о пользователе</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    {% if user.profile_image %}
+                    <img src="{{ user.profile_image }}" alt="{{ user.username }}" class="rounded-circle" width="100"
+                        height="100">
+                    {% else %}
+                    <div class="avatar-placeholder-large">{{ user.username[0]|upper }}</div>
+                    {% endif %}
+                </div>
+                <table class="table table-bordered">
+                    <tr>
+                        <th>ID:</th>
+                        <td>{{ user.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Имя пользователя:</th>
+                        <td>{{ user.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>Имя:</th>
+                        <td>{{ user.first_name }} {{ user.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Роль:</th>
+                        <td>{% if user.is_admin %}Администратор{% else %}Пользователь{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <th>Статус:</th>
+                        <td>{% if user.is_active %}Активен{% else %}Заблокирован{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <th>Дата регистрации:</th>
+                        <td>{{ user.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Баланс:</th>
+                        <td>{{ user.balance }}₽</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <form action="{{ url_for('admin.toggle_user_status', user_id=user.id) }}" method="POST"
+                    class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <button type="submit"
+                        class="btn {% if user.is_active %}btn-warning{% else %}btn-success{% endif %}">
+                        {% if user.is_active %}
+                        <i class="fas fa-ban me-1"></i>Блокировать
+                        {% else %}
+                        <i class="fas fa-check me-1"></i>Активировать
+                        {% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<style>
+    .avatar-placeholder {
+        width: 30px;
+        height: 30px;
+        background-color: #6c757d;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: bold;
+    }
+
+    .avatar-placeholder-large {
+        width: 100px;
+        height: 100px;
+        background-color: #6c757d;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: bold;
+        font-size: 2.5rem;
+        margin: 0 auto;
+    }
+
+    .btn-xs {
+        padding: 0.15rem 0.4rem;
+        font-size: 0.75rem;
+        line-height: 1.2;
+        border-radius: 0.2rem;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Обработка обновления списка пользователей
+        document.getElementById('refreshUsers').addEventListener('click', function () {
+            location.reload();
+        });
+    });
+</script>
 {% endblock %}

@@ -1,0 +1,26 @@
+{
+	"mcpServers": {
+		"server-sequential-thinking": {
+			"command": "cmd",
+			"args": [
+				"/c",
+				"npx",
+				"-y",
+				"@smithery/cli@latest",
+				"run",
+				"@smithery-ai/server-sequential-thinking",
+				"--key",
+				"1700206f-f8b2-4246-8ff4-c7a39ea83e06"
+			]
+		},
+		"BrowserTools": {
+			"command": "cmd",
+			"args": [
+				"/c",
+				"npx",
+				"-y",
+				"@agentdesk/browser-tools-mcp@1.2.0"
+			]
+		}
+	}
+}
